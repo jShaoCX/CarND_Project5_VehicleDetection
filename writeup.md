@@ -16,16 +16,15 @@ The goals / steps of this project are the following:
 
 [//]: # (Image References)
 [image1]: ./Results/Car_NonCar.png
-[image2]: ./Results/hog_image.jpg
+[image2]: ./Results/hog_image.png
 [image3]: ./Results/sliding_windows_medium.png
 [image4]: ./Results/sliding_windows_small.png
 [image5]: ./Results/final_detection_multiboxes.png
 [image6]: ./Results/final_detection_multiboxes_1.png
 [image7]: ./Results/combined_heat_map.png
-[image8]: ./Results/final_detection_bad_heat_label.png
-[image9]: ./Results/final_detection_heat_label.png
-[image10]: ./Results/final_detection_heat_label_1.png
-[image11]: ./Results/final_detection_boxes.png
+[image8]: ./Results/final_detection_heat_label.png
+[image9]: ./Results/final_detection_heat_label_1.png
+[image10]: ./Results/final_detection_boxes.png
 [video1]: ./Results/object_detection_video.mp4
 
 ## [Rubric](https://review.udacity.com/#!/rubrics/513/view) Points
@@ -48,8 +47,7 @@ I started by reading in all the `vehicle` and `non-vehicle` images.  Here is an 
 
 ![alt text][image1]
 
-I then explored different color spaces and different `skimage.hog()` parameters (`orientations`, `pixels_per_cell`, and `cells_per_block`). Here is an example using the `RGB` color space and HOG parameters of `orientations=9`, `pixels_per_cell=(8, 8)` and `cells_per_block=(2, 2)`. An example of the RGB channel histograms are also included below:
-
+I then explored different color spaces and different `skimage.hog()` parameters (`orientations`, `pixels_per_cell`, and `cells_per_block`). Here is an example using the HOG parameters of `orientations=9`, `pixels_per_cell=(8, 8)` and `cells_per_block=(2, 2)`. 
 
 ![alt text][image2]
 
@@ -97,10 +95,9 @@ Here's an example result showing the heatmap from a series of frames of video, t
 ### Here is the output of `scipy.ndimage.measurements.label()` on the integrated heatmap on the frames displayed in the previous section
 ![alt text][image8]
 ![alt text][image9]
-![alt text][image10]
 
 ### Here the resulting bounding boxes are drawn onto the last frame in the series:
-![alt text][image11]
+![alt text][image10]
 
 
 
