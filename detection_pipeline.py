@@ -31,6 +31,7 @@ for image in images:
     else:
         cars.append(image)
 
+#had to combine the GTI images into a single folder and append to the car list
 gti_cars = []
 os.chdir("../GTI_combine")
 images = glob.glob('*.png')
@@ -52,6 +53,35 @@ def data_look(car_list, notcar_list):
     data_dict["data_type"] = type(im[0, 0, 0])
     # Return data_dict
     return data_dict
+
+#test method for generating writeup images
+def process_image_single(image):
+    image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+
+    heat = np.zeros_like(image[:, :, 0]).astype(np.float)
+    _, med_on_windows = find_cars(image, y_start_stop[0], y_start_stop[1], 1.5, svc, X_scaler, orient, pix_per_cell, cell_per_block, spatial_size, hist_bins)
+    _, large_on_windows = find_cars(image, y_start_stop[0], y_start_stop[1]-128, 1.25, svc, X_scaler, orient, pix_per_cell, cell_per_block, spatial_size, hist_bins)
+    # Add heat to each box in box list
+    on_windows = large_on_windows+med_on_windows
+    heat = add_heat(heat, on_windows)
+
+    plt.imshow(heat, cmap='gray')
+    plt.show()
+
+    # Apply threshold to help remove false positives
+    heat = apply_threshold(heat, 1)
+
+    # Visualize the heatmap when displaying
+    heatmap = np.clip(heat, 0, 255)
+
+    # Find final boxes from heatmap using label function
+    labels = label(heatmap)
+    plt.imshow(labels[0], cmap='gray')
+    plt.show()
+
+    out_img = draw_labeled_bboxes_single(np.copy(image), labels)
+    out_img = cv2.cvtColor(out_img, cv2.COLOR_RGB2BGR)
+    return out_img
 
 os.chdir("../imagescombined")
 data_info = data_look(cars, notcars)
@@ -198,6 +228,65 @@ window_img = draw_labeled_bboxes(np.copy(image), labels)# draw_boxes(draw_image,
 window_img = cv2.cvtColor(window_img, cv2.COLOR_HSV2BGR)
 #plt.imshow(window_img)
 '''
+
+'''
+#running test images
+out_img = process_image_single(image)
+out_img = cv2.cvtColor(out_img, cv2.COLOR_BGR2RGB)
+plt.imshow(out_img)
+plt.show()
+
+image = cv2.imread('./test_images/test2.jpg')
+out_img = process_image_single(image)
+out_img = cv2.cvtColor(out_img, cv2.COLOR_BGR2RGB)
+plt.imshow(out_img)
+plt.show()
+image = cv2.imread('./test_images/test3.jpg')
+out_img = process_image_single(image)
+out_img = cv2.cvtColor(out_img, cv2.COLOR_BGR2RGB)
+plt.imshow(out_img)
+plt.show()
+image = cv2.imread('./test_images/test4.jpg')
+out_img = process_image_single(image)
+out_img = cv2.cvtColor(out_img, cv2.COLOR_BGR2RGB)
+plt.imshow(out_img)
+plt.show()
+image = cv2.imread('./test_images/test5.jpg')
+out_img = process_image_single(image)
+out_img = cv2.cvtColor(out_img, cv2.COLOR_BGR2RGB)
+plt.imshow(out_img)
+plt.show()
+image = cv2.imread('./test_images/test6.jpg')
+out_img = process_image_single(image)
+out_img = cv2.cvtColor(out_img, cv2.COLOR_BGR2RGB)
+plt.imshow(out_img)
+plt.show()
+'''
+'''
+#displaying hog image
+image = cv2.imread('./vehicles/GTI_Right/image0364.png')
+features, hog_image = hog(cv2.cvtColor(image, cv2.COLOR_BGR2GRAY), orientations=9,
+                          pixels_per_cell=(8, 8),
+                          cells_per_block=(2, 2),
+                          transform_sqrt=True,
+                          visualise=True)
+
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(8, 4), sharex=True, sharey=True)
+
+ax1.axis('off')
+ax1.imshow(image, cmap=plt.cm.gray)
+ax1.set_title('Input image')
+ax1.set_adjustable('box-forced')
+
+ax2.axis('off')
+ax2.imshow(hog_image, cmap=plt.cm.gray)
+ax2.set_title('Histogram of Oriented Gradients')
+ax1.set_adjustable('box-forced')
+plt.show()
+'''
+
+
+#declare a deque for frame averaging
 heat_map_list = deque()
 
 def process_image(image):
@@ -230,91 +319,8 @@ def process_image(image):
     out_img = cv2.cvtColor(out_img, cv2.COLOR_RGB2BGR)
     return out_img
 
-def process_image_single(image):
-    image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-
-    heat = np.zeros_like(image[:, :, 0]).astype(np.float)
-    _, med_on_windows = find_cars(image, y_start_stop[0], y_start_stop[1], 1.5, svc, X_scaler, orient, pix_per_cell, cell_per_block, spatial_size, hist_bins)
-    _, large_on_windows = find_cars(image, y_start_stop[0], y_start_stop[1]-128, 1.25, svc, X_scaler, orient, pix_per_cell, cell_per_block, spatial_size, hist_bins)
-    # Add heat to each box in box list
-    on_windows = large_on_windows+med_on_windows
-    heat = add_heat(heat, on_windows)
-
-    plt.imshow(heat, cmap='gray')
-    plt.show()
-
-    # Apply threshold to help remove false positives
-    heat = apply_threshold(heat, 1)
-
-    # Visualize the heatmap when displaying
-    heatmap = np.clip(heat, 0, 255)
-
-    # Find final boxes from heatmap using label function
-    labels = label(heatmap)
-    plt.imshow(labels[0], cmap='gray')
-    plt.show()
-
-    out_img = draw_labeled_bboxes_single(np.copy(image), labels)
-    out_img = cv2.cvtColor(out_img, cv2.COLOR_RGB2BGR)
-    return out_img
-
-'''
-out_img = process_image_single(image)
-out_img = cv2.cvtColor(out_img, cv2.COLOR_BGR2RGB)
-plt.imshow(out_img)
-plt.show()
-
-image = cv2.imread('./test_images/test2.jpg')
-out_img = process_image_single(image)
-out_img = cv2.cvtColor(out_img, cv2.COLOR_BGR2RGB)
-plt.imshow(out_img)
-plt.show()
-image = cv2.imread('./test_images/test3.jpg')
-out_img = process_image_single(image)
-out_img = cv2.cvtColor(out_img, cv2.COLOR_BGR2RGB)
-plt.imshow(out_img)
-plt.show()
-image = cv2.imread('./test_images/test4.jpg')
-out_img = process_image_single(image)
-out_img = cv2.cvtColor(out_img, cv2.COLOR_BGR2RGB)
-plt.imshow(out_img)
-plt.show()
-image = cv2.imread('./test_images/test5.jpg')
-out_img = process_image_single(image)
-out_img = cv2.cvtColor(out_img, cv2.COLOR_BGR2RGB)
-plt.imshow(out_img)
-plt.show()
-image = cv2.imread('./test_images/test6.jpg')
-out_img = process_image_single(image)
-out_img = cv2.cvtColor(out_img, cv2.COLOR_BGR2RGB)
-plt.imshow(out_img)
-plt.show()
-'''
-
-image = cv2.imread('./vehicles/GTI_Right/image0364.png')
-features, hog_image = hog(cv2.cvtColor(image, cv2.COLOR_BGR2GRAY), orientations=9,
-                          pixels_per_cell=(8, 8),
-                          cells_per_block=(2, 2),
-                          transform_sqrt=True,
-                          visualise=True)
-
-fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(8, 4), sharex=True, sharey=True)
-
-ax1.axis('off')
-ax1.imshow(image, cmap=plt.cm.gray)
-ax1.set_title('Input image')
-ax1.set_adjustable('box-forced')
-
-ax2.axis('off')
-ax2.imshow(hog_image, cmap=plt.cm.gray)
-ax2.set_title('Histogram of Oriented Gradients')
-ax1.set_adjustable('box-forced')
-plt.show()
-
-'''
 adv_output = 'object_detection_video.mp4'
 clip1 = VideoFileClip("project_video.mp4")
 #clip1 = VideoFileClip("project_video.mp4").subclip(18,24) #19,23
 white_clip = clip1.fl_image(process_image) #NOTE: this function expects color images!!
 white_clip.write_videofile(adv_output, audio=False)
-'''

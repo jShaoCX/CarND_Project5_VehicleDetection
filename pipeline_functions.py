@@ -1,20 +1,10 @@
 import numpy as np
 import cv2 as cv2
-import glob
 from moviepy.editor import VideoFileClip
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
-import os
-from sklearn.preprocessing import StandardScaler
-from sklearn.model_selection import train_test_split
 from skimage.feature import hog
-from sklearn.svm import LinearSVC
-import sklearn.svm as svm
-from sklearn.model_selection import GridSearchCV
-import time
-from scipy.ndimage.measurements import label
 
-# Define a function to return HOG features and visualization
 def get_hog_features(img, orient, pix_per_cell, cell_per_block,
                         vis=False, feature_vec=True):
     # Call with two outputs if vis==True
@@ -34,14 +24,12 @@ def get_hog_features(img, orient, pix_per_cell, cell_per_block,
                        visualise=vis, feature_vector=feature_vec)
         return features
 
-# Define a function to compute binned color features
 def bin_spatial(img, size=(32, 32)):
     # Use cv2.resize().ravel() to create the feature vector
     features = cv2.resize(img, size).ravel()
     # Return the feature vector
     return features
 
-# Define a function to compute color histogram features
 # NEED TO CHANGE bins_range if reading .png files with mpimg!
 def color_hist(img, nbins=32, bins_range=(0, 256)):
     # Compute the histogram of the color channels separately
@@ -242,7 +230,6 @@ def convert_color(img, conv='RGB2YCrCb'):
     if conv == 'RGB2LUV':
         return cv2.cvtColor(img, cv2.COLOR_RGB2LUV)
 
-# Define a single function that can extract features using hog sub-sampling and make predictions
 def find_cars(img, ystart, ystop, scale, svc, X_scaler, orient, pix_per_cell, cell_per_block, spatial_size, hist_bins):
     draw_img = np.copy(img)
     #img = img.astype(np.float32) / 255
@@ -312,8 +299,8 @@ def find_cars(img, ystart, ystop, scale, svc, X_scaler, orient, pix_per_cell, ce
 
             #cv2.rectangle(draw_img, (xbox_left, ytop_draw + ystart),(xbox_left + win_draw, ytop_draw + win_draw + ystart), (0, 0, 255), 6)
 
-    plt.imshow(draw_img)
-    plt.show()
+    #plt.imshow(draw_img)
+    #plt.show()
     return draw_img, on_windows
 
 
